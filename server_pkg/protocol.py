@@ -58,7 +58,10 @@ class SyncServerProtocol(LineReceiver):
         :param line: the sent message
         """
 
-        logging.info(f"Received {line}")
+        if not line.startswith(b"modified"):  # do not log the full line if this is a modified event
+            logging.info(f"Received {line}")
+        else:
+            logging.info("Received 'modified' event")
 
         # messages follow the format <event_type>::<flag for directory event>::<msg body dependent on event>
         msg_parts = line.split(b"::", 2)
