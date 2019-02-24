@@ -75,5 +75,5 @@ python3 server_pkg/server.py <absolute path of the folder to synchronise>
 Example:
 
 ```
-python3 server_pkg/sever.py /home/ns/server_test_folder 
+python3 server_pkg/server.py /home/ns/server_test_folder 
 ```
