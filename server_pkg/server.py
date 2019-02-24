@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 if __name__ == "__main__":
 
-    assert len(sys.argv) == 2, "Expecting two arguments: python3 client.py <folder to synchronize>"
+    assert len(sys.argv) == 2, "Expecting two arguments: python3 server.py <folder to synchronize>"
 
     # retrieve arguments
     path = sys.argv[1]
