@@ -77,3 +77,13 @@ Example:
 ```
 python3 server_pkg/server.py /home/ns/server_test_folder 
 ```
+
+
+
+### Limitations
+
+Currently the communication protocol is built so that received data is buffered until a **\r\r\r\n\n\n** sequence is received,
+which is considered to be the end of a message. This is achieved by using twisted's utility protocol **LineReceiver** as a base
+for communication, which however, also imposes a limitation on the message length - currently set to 999999999. This means that 
+the application will fail if very large files are used. This could be avoided by having a custom protocol which receives the message 
+length before starting to buffer any data and processes the message once the required message length has been received.
