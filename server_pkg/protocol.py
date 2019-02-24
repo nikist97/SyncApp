@@ -16,16 +16,18 @@ class SyncServerProtocol(LineReceiver):
 
     MAX_LENGTH = 999999999
 
-    def __init__(self, factory):
+    def __init__(self, factory, abort=False):
         """
         Initialise the protocol object.
 
         :param factory: reference to the factory
+        :param abort: True if connection must be aborted after the initialisation of the object, False otherwise
         """
 
         super().__init__()
 
         self.factory = factory
+        self.abort = abort
 
     def connectionMade(self):
         """
@@ -33,11 +35,10 @@ class SyncServerProtocol(LineReceiver):
         """
 
         # check if a connection with another client has already been made
-        if self.factory.connection_made:
+        if self.abort:
             self.transport.abortConnection()
             logging.warning(f"Connection with {self.transport.getPeer().host} has been aborted.")
         else:
-            self.factory.connection_made = True
             logging.info(f"Connection with {self.transport.getPeer().host} has been established.")
 
     def connectionLost(self, reason):
@@ -47,8 +48,9 @@ class SyncServerProtocol(LineReceiver):
         :param reason: the reason as reported by twisted.
         """
 
-        print("LOSING")
-        self.factory.connection_made = False
+        # if this was the first connection, update the factory flag
+        if not self.abort:
+            self.factory.connection_made = False
         logging.warning(f"Connection with {self.transport.getPeer().host} has been lost - {reason}.")
 
     def lineReceived(self, line):
@@ -192,7 +194,12 @@ class SyncFactory(Factory):
         :return: new protocol object
         """
 
-        return SyncServerProtocol(self)
+        proto = SyncServerProtocol(self, abort=self.connection_made)
+        
+        if not self.connection_made:
+            self.connection_made = True
+
+        return proto
 
 
 def create_server(sync_folder_path, port=9876):
